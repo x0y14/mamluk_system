@@ -1,0 +1,293 @@
+﻿# hey recipient, pls educate my slave
+request_educate_slave_as_mamluk = {
+	icon = interaction_category_friendly
+	common_interaction = yes
+	icon = child
+
+	desc = request_educate_slave_as_mamluk_desc
+
+	populate_actor_list = {
+		scope:actor = {
+			every_courtier = {
+				limit = {
+					is_adult = no
+					is_physically_able = yes
+					trigger_if = {
+						limit = { is_mamluk_system_core_installed = yes}
+						has_trait = slave
+					}
+					NOT = {
+						any_relation = {
+							type = guardian
+							this = scope:recipient
+						}
+					}
+					is_hostage = no
+					is_travelling = no #Can be removed once the can_be_picked is fixed to re-evaluate
+					NAND = {
+						has_character_flag = studying_at_mamluk_barracks
+						num_of_relation_guardian = 1
+					}
+				}
+				add_to_list = characters
+			}
+
+			every_courtier_away = {
+				limit = {
+					is_adult = no
+					is_physically_able = yes
+					trigger_if = {
+						limit = { is_mamluk_system_core_installed = yes}
+						has_trait = slave
+					}
+					NOT = {
+						any_relation = {
+							type = guardian
+							this = scope:recipient
+						}
+					}
+					is_hostage = no
+					is_travelling = no #Can be removed once the can_be_picked is fixed to re-evaluate
+					NAND = {
+						has_character_flag = studying_at_mamluk_barracks
+						num_of_relation_guardian = 1
+					}
+				}
+				add_to_list = characters
+			}
+		}
+	}
+
+	prompt = MAMLUK_SELECT_SLAVE
+
+	is_shown = {
+		scope:recipient = {
+			is_landed = yes
+			is_alive = yes
+			capital_province = { has_building_or_higher = mamluk_barracks_01 }
+		}
+	}
+
+	can_be_picked = {
+		is_available = yes
+
+		# Hostage
+		custom_tooltip = {
+			text = hostage_travelling_tt
+			NOT = { exists = var:hostage_travelling_to_warden }
+		}
+	}
+
+	on_send = {
+		scope:secondary_actor = {
+			add_character_flag = {
+				flag = under_offer_as_ward_flag
+				months = 1
+			}
+		}
+	}
+
+	on_auto_accept = {
+		scope:secondary_actor = { save_scope_as = ward }
+		scope:actor = { save_scope_as = ward_liege }
+		scope:recipient = { save_scope_as = guardian_liege }
+		# マムルーク教育者の選択
+		# todo
+		scope:recipient = {
+			random_courtier = {
+				# limit = {
+				# 	is_physically_able_ai_adult = yes
+				# 	child_not_infant_trigger = yes
+				# }
+				limit = {
+					is_adult = yes
+					num_of_relation_ward < 2
+				}
+				save_scope_as = guardian
+			}
+		}
+
+		# 教育設定ついて, eventsで使う
+		save_scope_value_as = {
+			name = education_hook
+			value = no
+		}
+		save_scope_value_as = {
+			name = convert_culture
+			value = yes
+		}
+		save_scope_value_as = {
+			name = convert_faith
+			value = yes
+		}
+		save_scope_value_as = {
+			name = send_to_university
+			value = no
+		}
+
+		# もうすぐ成人する
+		if = {
+			limit = { scope:ward.age >= 15 }
+			custom_description_no_bullet = {
+				text = ward_nearing_adulthood_tt
+				object = scope:ward
+			}
+		}
+
+		# 所有者、教育者を保存
+		scope:ward = {
+			set_variable = {
+				name = owner
+				value = scope:ward_liege
+			}
+			set_variable = {
+				name = head_of_clique
+				value = scope:guardian
+			}
+		}
+
+		# Handle existing guardian
+		scope:ward = {
+			if = {
+				limit = {
+					NOT = { has_focus = education_martial }
+				}
+				set_focus = education_martial
+			}
+			if = {
+				limit = {
+					NOT = { has_variable = education_martial_variable }
+				}
+				set_variable = {
+					name = education_martial_variable
+					value = age
+				}
+			}
+
+			add_character_flag = {
+				flag = studying_at_mamluk_barracks
+				years = 17
+			}
+
+			if = {
+				limit = {
+					any_relation = {
+						type = guardian
+						NOT = { this = scope:guardian }
+					}
+				}
+				random_relation = {
+					type = guardian
+					save_scope_as = old_guardian
+					
+					#Letter event to guardian
+					if = {
+						limit = {
+							NOT = { scope:old_guardian = scope:actor }
+						}
+						scope:old_guardian = { trigger_event = char_interaction.0090 }
+					}
+				}
+				scope:actor = {
+					send_interface_message = {
+						type = event_generic_neutral
+						title = remove_guardian_interaction_notification
+						left_icon = scope:old_guardian
+						right_icon = scope:ward
+						remove_guardian_effect = {
+							GUARDIAN = scope:old_guardian
+							WARD = scope:ward
+							RETURN_WARD = yes
+							HIDE_OPINION = no
+						}
+
+						#Was education promised in interaction or in vassal.2001? Then you get an opinion penalty
+						if = {
+							limit = {
+								exists = scope:ward.var:character_requested_as_educator
+								scope:ward.var:character_requested_as_educator = scope:old_guardian
+								exists = scope:ward.var:character_making_education_request
+								scope:ward.var:character_making_education_request = {
+									is_alive = yes
+									OR = {
+										this = scope:old_guardian
+										scope:old_guardian = { is_courtier_of = prev }
+									}
+									NOT = { this = scope:actor }
+								}
+							}
+							scope:ward.var:character_making_education_request = {
+								add_opinion = {
+									modifier = insult_opinion
+									target = scope:actor
+									opinion = -15
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		show_as_tooltip = {
+			scope:guardian  = { set_relation_ward = scope:ward }
+			educate_child_interaction_effect = yes
+		}
+
+		scope:actor = {
+			if = {
+				limit = {
+					NOT = { this = scope:recipient } 
+					scope:ward = {
+						#num_of_relation_guardian = 0
+						NOR = {
+							any_relation = {
+								type = guardian
+								this = scope:recipient
+							}
+							any_relation = {
+								type = guardian
+								OR = {
+									is_at_war_with = scope:actor
+									any_liege_or_above = { is_at_war_with = scope:actor }
+								}
+							}
+						}
+					}
+					scope:guardian = { num_of_relation_ward < 2	}
+				}
+				# todo original event
+				trigger_event = char_interaction.0080
+			}
+			# visit_court_of = scope:emperor
+			# add_trait = varangian
+		}
+	}
+
+	send_options_exclusive = no
+
+	send_option = {
+		is_shown = { always = yes }
+		is_valid = { always = yes }
+		starts_enabled = { always = yes	}
+		can_be_changed = { NOT = { always = yes } }
+		flag = send_to_mamluk_barracks
+		localization = EDUCATION_MAMLUK_BARRACKS
+	}
+
+	auto_accept = yes
+
+	ai_frequency = 1
+	# ai_potential = {
+	# 	# ほかの役職があいていればやらないかもしれない
+		
+	# }
+	ai_potential = { always = yes }
+	ai_targets = {
+		ai_recipients = courtiers
+	}
+
+	ai_will_do = {
+		base = 100
+	}
+}

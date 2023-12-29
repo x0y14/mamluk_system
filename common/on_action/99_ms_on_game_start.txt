@@ -1,0 +1,6 @@
+﻿on_game_start = {
+    events = {
+		# system installed
+		mamluk_system.0001
+	}
+}

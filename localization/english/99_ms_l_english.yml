@@ -1,0 +1,27 @@
+﻿l_english:
+  ### building
+  building_type_mamluk_barracks_01:0 "Mamluk Barracks"
+  building_type_mamluk_barracks_01_desc:0 "$building_type_mamluk_barracks_01$ DESC"
+  building_mamluk_barracks_01:0 "Simple barracks"
+  building_mamluk_barracks_01_desc:0 "$building_type_mamluk_barracks_01_desc$"
+
+
+  ### decision
+  found_mamluk_barracks_decision: "Found Mamluk Barracks"
+  found_mamluk_barracks_decision_desc: "$found_mamluk_barracks_decision$ DESC"
+  found_mamluk_barracks_decision_tooltip: "$found_mamluk_barracks_decision$ TT"
+  found_mamluk_barracks_decision_confirm: "Confirm"
+
+
+  ### interactions
+  EDUCATION_MAMLUK_BARRACKS:0 "Send to Mamluk Barracks"
+  request_educate_slave_as_mamluk: "Request Educate As Mamluk"
+  request_educate_slave_as_mamluk_desc: "$request_educate_slave_as_mamluk$ DESC"
+  MAMLUK_SELECT_SLAVE:0 "#I Choose a [slave|E] from your [court|E]#!"
+  actor_secondary_request_educate_slave_as_mamluk:0 "[slave|e]"
+
+  ### Events
+  # Mamluk Barracks owner's liege gets(or return) a new mamluk
+  # mamluk_system.0002
+  mamluk_arrived.title:0 "A New Mamluk"
+  mamluk_arrived_return.desc:0 "  [mamluk.GetShortUIName|U], who had been educated by a [mhead_of_clique.GetTitledFirstName], completed [mamluk.GetHerHis] education and returned"

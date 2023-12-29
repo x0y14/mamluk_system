@@ -1,0 +1,80 @@
+﻿namespace = mamluk_system
+
+# mod settings
+mamluk_system.0001 = {
+	hidden = yes
+	scope = none
+
+	immediate = {
+		set_global_variable = {
+			name = mamluk_system_installed
+			value = yes
+		}
+	}
+}
+
+# Mamluk Barracks owner's liege gets(or return) a new mamluk
+mamluk_system.0002 = {
+	hidden = yes
+
+	immediate = {
+		root = { save_scope_as = mamluk }
+		scope:mamluk.var:owner = { save_scope_as = mamluk_owner }
+		scope:mamluk.var:head_of_clique = { save_scope_as = head_of_clique }
+		# マムルークの所有者が存命で、土地を持っている場合
+		# 普通に戻る
+		# if = {
+		# 	limit = {
+		# 		scope:mamluk_owner = {
+		# 			is_alive = yes
+		# 			is_landed = yes
+		# 		}
+		# 	}
+		# 	scope:mamluk_owner = {
+		# 		send_interface_message = {
+		# 			type = event_martial_text_good
+		# 			left_icon = scope:mamluk
+		# 			title = mamluk_arrived.title
+		# 			desc = mamluk_arrived_return.desc
+		# 		}
+		# 		if = {
+		# 			limit = {
+		# 				NOT = { scope:mamluk = { is_courtier_of = scope:mamluk_owner } }
+		# 			}
+		# 		}
+		# 		add_courtier = scope:mamluk
+		# 	}
+		# }
+
+		# 帰る場所なし
+		if = {
+			limit = {
+				NOR = {
+					scope:mamluk_owner = { is_alive = yes }
+					scope:mamluk_owner = { is_landed = yes }
+				}
+			}
+			# 教育者のTopLiegeの封臣にランダムに移動する
+			scope:head_of_clique.top_liege = {
+				random_vassal = {
+					limit = {
+						is_landed = yes
+						highest_held_title_tier >= tier_county
+					}
+					send_interface_message = {
+						type = event_martial_text_good
+						left_icon = scope:mamluk
+						title = mamluk_arrived.title
+						desc = mamluk_arrived_return.desc
+					}
+					if = {
+						limit = {
+							NOT = { scope:mamluk = { is_courtier_of = this } }
+						}
+					}
+					add_courtier = scope:mamluk
+				}
+			}
+		}
+	}
+}

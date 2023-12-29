@@ -1,0 +1,59 @@
+﻿on_birthday_education_events = {
+	on_actions = { childhood_education_mamluk_barrack_boost }
+}
+
+childhood_education_mamluk_barrack_boost = {
+	trigger = {
+		NOT = { age = 16 } # Already fired in 'on_16th_birthday' on_action
+		has_character_flag = studying_at_mamluk_barracks
+	}
+
+	effect = {
+		#Make it more likely that he gets a good martial education
+		hidden_effect = {
+			education_point_acquisition_effect = yes
+			education_point_acquisition_effect = yes
+		}
+	}
+}
+
+on_16th_birthday = {
+	on_actions = {
+		get_mamluk_trait
+		mamluk_return_from_studying
+	}
+}
+
+get_mamluk_trait = {
+	trigger = {
+		has_character_flag = studying_at_mamluk_barracks
+		has_trait = slave
+		NOT = { has_trait = mamluk }
+	}
+	effect = {
+		remove_trait = slave
+		add_trait = mamluk
+	}
+}
+
+mamluk_return_from_studying = {
+	trigger = {
+		has_variable = owner
+		has_variable = head_of_clique
+	}
+	effect = {
+		trigger_event = {
+			# Mamluk Barracks owner's liege gets(or return) a new? mamluk
+			id = mamluk_system.0002
+			months = 6
+		}
+	}
+}
+
+# Emperor gets a new varangian
+# varangian.0003
+
+# add_character_flag = {
+# 	flag = studying_at_university
+# 	years = 17
+# }
