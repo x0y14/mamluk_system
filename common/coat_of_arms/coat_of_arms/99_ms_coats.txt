@@ -14,7 +14,6 @@
 }
 
 mamluk_no_crescent_coa ={
-	custom=yes
 	pattern="pattern__solid_designer.dds"
 	color1=yellow
 	color2=yellow

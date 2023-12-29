@@ -25,3 +25,8 @@
   # mamluk_system.0002
   mamluk_arrived.title:0 "A New Mamluk"
   mamluk_arrived_return.desc:0 "  [mamluk.GetShortUIName|U], who had been educated by a [mhead_of_clique.GetTitledFirstName], completed [mamluk.GetHerHis] education and returned"
+
+  ### War
+  mamluk_rebellion_cb:0 "Mamluk Reballion"
+  mamluk_rebellion_title: "[attacker.GetShortUIName] will seize all territory within [defender.GetShortUINamePossessive] [realm|E] that is part of the [THIS.GetLandedTitle.GetBaseName]"
+  MAMLUK_REBELLION_NEUTRAL_NAME:0 "Mamluk Rebels"

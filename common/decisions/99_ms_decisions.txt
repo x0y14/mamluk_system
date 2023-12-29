@@ -15,6 +15,14 @@
 		capital_province = {
 			add_special_building = mamluk_barracks_01
 		}
+		# add_to_global_variable_list = {
+		# 	name = mamluk_barracks_provinces
+		# 	target = capital_province.title_province
+		# }
+		set_global_variable = {
+			name = mamluk_barracks_province
+			value = capital_province
+		}
 	}
 
 	ai_check_interval = 0
